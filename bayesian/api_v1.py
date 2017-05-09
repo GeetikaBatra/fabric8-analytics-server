@@ -35,6 +35,7 @@ from .schemas import load_all_server_schemas
 from .utils import (get_latest_analysis_for, get_latest_analysis_by_hash, get_system_version,
                     do_projection, build_nested_schema_dict, server_create_analysis, server_run_flow,
                     get_analyses_from_graph, search_packages_from_graph)
+from .utils import test_app
 from cucoslib.graphutils import (get_stack_usage_data_graph, get_stack_popularity_data_graph,
                          aggregate_stack_data)
 import os
@@ -728,6 +729,17 @@ class UserFeedback(ResourceWithSchema):
 
         return {'status': 'success'}
 
+class Test(ResourceWithSchema):
+    def get(self):
+        print("reached test")
+        return{"status": "Success"}
+
+    def post(self):
+        file = "test.txt"
+        print(file)
+        test_app(file)
+        
+
 
 class StackAnalyses(ResourceWithSchema):
     method_decorators = [login_required]
@@ -966,6 +978,7 @@ class PublishedSchemas(ResourceWithSchema):
 
 add_resource_no_matter_slashes(ApiEndpoints, '')
 add_resource_no_matter_slashes(Ecosystems, '/ecosystems')
+add_resource_no_matter_slashes(Test, '/test')
 add_resource_no_matter_slashes(Packages, '/packages/<ecosystem>')
 add_resource_no_matter_slashes(Versions, '/versions/<ecosystem>/<package>')
 add_resource_no_matter_slashes(ComponentsInRange, '/versions/in-range/<ecosystem>')

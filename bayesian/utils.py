@@ -18,6 +18,12 @@ from requests import get, post, exceptions
 def get_recent_analyses(limit=100):
     return rdb.session.query(Analysis).order_by(Analysis.started_at.desc()).limit(limit)
 
+def test_app(file):
+    print("Reached test_app of utils")
+    args = {
+        'file': file
+    }
+    server_run_flow('Test', args)
 
 def server_run_flow(flow_name, flow_args):
     """Run a flow
