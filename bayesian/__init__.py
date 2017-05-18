@@ -9,7 +9,13 @@ from flask import url_for
 from flask_appconfig import AppConfig
 from flask_security import SQLAlchemyUserDatastore, Security
 from flask_sqlalchemy import SQLAlchemy
-
+from flask_socketio import SocketIO, emit, send, disconnect
+from cucoslib.schemas import SchemaRef
+from cucoslib.utils import (safe_get_latest_version, get_dependents_count, get_component_percentile_rank,
+                            usage_rank2str, MavenCoordinates)
+from .utils import (get_system_version,
+                    build_nested_schema_dict, server_create_analysis, server_run_flow,
+                    get_analyses_from_graph, search_packages_from_graph)
 
 def setup_logging(app):
     if not app.debug:
@@ -29,7 +35,7 @@ def create_app(configfile=None):
     from .exceptions import HTTPError
     from .utils import JSONEncoderWithExtraTypes
     app = Flask(__name__)
-
+    
     AppConfig(app, configfile)
 
     # actually init the DB with config values now
@@ -77,4 +83,35 @@ def create_app(configfile=None):
 
 
 app = create_app()
+socketio = SocketIO(app)
+
+# @socketio.on('echo')
+# def handle_my_custom_namespace_event(jsn):
+#     print('received json: ' + str(jsn))
+#     return {'msg': jsn}
+
+@socketio.on('echo', namespace='/test')
+def ping_pong(msg):
+    print("reached here")
+    print(msg)
+    # import pdb
+    # pdb.set_trace()
+    schema_ref = SchemaRef('analyses_graphdb', '1-2-0')
+    ecosystem = "npm"
+    package = "serve-static"
+    version = "1.7.1"
+    if ecosystem == 'maven':
+        package = MavenCoordinates.normalize_str(package)
+    result = get_analyses_from_graph(ecosystem, package, version)
+    # current_app.logger.warn( "%r" % result)
+    print("here")
+    print("result", result)
+    if result != None:
+        print("result is not none")
+        # Known component for Bayesian
+        print(result)
+        emit("my_response", result)
+        # disconnect()
+
+
 from . import filters

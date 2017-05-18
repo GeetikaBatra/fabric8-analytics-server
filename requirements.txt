@@ -35,3 +35,4 @@ sqlalchemy==1.1.3         # via flask-sqlalchemy
 urllib3==1.20             # via requests
 werkzeug==0.11.11         # via flask, flask-wtf
 wtforms==2.1              # via flask-wtf
+Flask-SocketIO==2.8.6
