@@ -10,7 +10,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from cucoslib.models import Analysis, Ecosystem, Package, Version, WorkerResult
 from cucoslib.utils import json_serial, MavenCoordinates
 
-# from . import rdb
+from . import rdb
 from .setup import Setup
 
 from requests import get, post, exceptions
@@ -196,15 +196,17 @@ def search_packages_from_graph(tokens):
 
 
 def get_analyses_from_graph (ecosystem, package, version):
-    print("reache byesian")
+    print("reached byesian")
     url = "http://{host}:{port}".format\
             (host=os.environ.get("BAYESIAN_GREMLIN_HTTP_SERVICE_HOST", "localhost"),\
              port=os.environ.get("BAYESIAN_GREMLIN_HTTP_SERVICE_PORT", "8182"))
+    print(url)
     qstring = "g.V().has('ecosystem','" + ecosystem + "').has('name','" + package + "')" \
               ".as('package').out('has_version').as('version').select('package','version').by(valueMap());"
     payload = {'gremlin': qstring}
     try:
         graph_req = post(url, data=json.dumps(payload))
+        print(graph_req)
     except:
         return None
 

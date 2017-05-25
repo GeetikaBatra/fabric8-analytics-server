@@ -238,9 +238,22 @@ class ComponentSearch(ResourceWithSchema):
 
         # Tokenize the search term before calling graph search
         result = search_packages_from_graph(re.split('\W+', package))
+        result = { 
+        "result":
+                [{
+                "name": "serve-static",
+                "ecosystem": "npm",
+                "version": "1.7.1"
+            }, {
+                "name": "serve-static",
+                "ecosystem": "npm",
+                "version": "1.7.0"
+            }]
+        }
         return result
 
 class ComponentAnalyses(ResourceWithSchema):
+    print("reached")
     method_decorators = [login_required]
 
     schema_ref = SchemaRef('analyses_graphdb', '1-2-0')
@@ -310,9 +323,8 @@ class StackAnalysesByGraphGET(ResourceWithSchema):
 
 class UserFeedback(ResourceWithSchema):
     _ANALYTICS_BUCKET_NAME = "{DEPLOYMENT_PREFIX}-".format(**os.environ) \
-                             + os.environ.get("AWS_ANALYTICS_BUCKET", "bayesian-user-feedback")
-
-    def post(self):
+                             + os.environ.get("AWS_ANALYTICS_BUCKET", "bayesian-user-feedback")              
+    def post(self): 
         input_json = request.get_json()
 
         if not request.json or 'request_id' not in input_json:
